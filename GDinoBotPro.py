@@ -7,34 +7,36 @@ import webbrowser
 class Bot:
     def __init__(self):
         self.dinoCor = (174,620 )
-        self.detectArea = (self.dinoCor[0] + 120, self.dinoCor[1], self.dinoCor[0] + 220, self.dinoCor[1] + 5)
-         
-    def setDinoCoords(self, x, y):
-        self.dinoCor = (x, y)
+        self.detectAreaDown = (self.dinoCor[0] + 120, self.dinoCor[1], self.dinoCor[0] + 220, self.dinoCor[1] + 5)
+        self.detectAreaUp = (self.dinoCor[0] + 120, self.dinoCor[1] - 100, self.dinoCor[0] + 220, self.dinoCor[1] + 5 - 100)
        
     def  start(self):
         pg.hotkey("space")
-        pg.keyDown("down")
       
     def jump(self):
-        pg.keyUp("down")
         pg.hotkey("Space") 
 
     def stayLow(self):
-        pg.keyDown("down")
+        pg.hotkey("down")
+
     def detection(self):
-        image = ImageGrab.grab(self.detectArea)
-        gray_img = ImageOps.grayscale(image) 
-        arr = np.array(gray_img.getcolors())
-        return arr.mean()
+        imageDown = ImageGrab.grab(self.detectAreaDown)
+        grayImgDown = ImageOps.grayscale(imageDown) 
+        arrDown = np.array(grayImgDown.getcolors())
+
+        imageUp = ImageGrab.grab(self.detectAreaUp)
+        grayImgUp = ImageOps.grayscale(imageUp) 
+        arrUp = np.array(grayImgUp.getcolors())
+
+        return arrDown.mean(),arrUp.mean()
 
     def main(self):
         self.start()
+        upDet, downDet = self.detection()
         while True: 
-            if self.detection() < 273:
+            if downDet < 273:
                 self.jump()
-                time.sleep(0.5)
-            else:
+            elif upDet < 273:
                 self.stayLow()
                             
 
